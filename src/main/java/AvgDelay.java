@@ -1,4 +1,6 @@
-public class AvgDelay {
+import java.io.Serializable;
+
+public class AvgDelay implements Serializable {
     private float total;
     private int count;
 
@@ -14,4 +16,6 @@ public class AvgDelay {
         this.count = count;
         this.total = total;
     }
+
+    
 }
