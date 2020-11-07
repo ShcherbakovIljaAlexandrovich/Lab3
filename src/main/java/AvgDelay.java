@@ -9,4 +9,8 @@ public class AvgDelay {
     public int getCount() {
         return count;
     }
+
+    public AvgDelay(float total, int count) {
+        
+    }
 }
