@@ -24,5 +24,12 @@ public class AirportsDelayCalculator {
         JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
         JavaPairRDD<Tuple2<String, String>, Float> delays = distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
 
+        JavaPairRDD<String, AvgDelay> AvgDelays =
+                nums.combineByKey(
+                p -> new AvgDelay(p.getValue(), 1),
+                (AvgDelay, p) -> AvgDelay.addValue(
+                AvgDelay,
+                p.getValue()),
+                AvgDelay::add);
     }
 }
