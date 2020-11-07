@@ -22,14 +22,17 @@ public class AirportsDelayCalculator {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
-        JavaPairRDD<Tuple2<String, String>, Float> delays = distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
+        JavaPairRDD<Tuple2<String, String>, Float> delays =
+                distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
 
-        JavaPairRDD<String, AvgDelay> AvgDelays =
+        JavaPairRDD<Tuple2<String, String>, AvgDelay> avgDelays =
                 delays.combineByKey(
-                p -> new AvgDelay(p.getValue(), 1),
+                p -> new AvgDelay(p, 1),
                 (AvgDelay, p) -> AvgDelay.addValue(
                 AvgDelay,
-                p.getValue()),
+                p),
                 AvgDelay::add);
+
+        
     }
 }
