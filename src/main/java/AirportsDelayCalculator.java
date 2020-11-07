@@ -21,11 +21,7 @@ public class AirportsDelayCalculator {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
-        JavaPairRDD<Tuple2<String, String>, Float> delays = distFile.flatMap(s -> {
-            String[] seq = s.split(DELIMITER);
-            Tuple2<String, String> first = new Tuple2<>(seq[ORIGIN_AIRPORT_ID_COLUMN], seq[DEST_AIRPORT_ID_COLUMN]);
-            Float second = Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]);
-            return new Tuple2<>(first, second);
-        });
+        JavaPairRDD<Tuple2<String, String>, Float> delays = distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
+        
     }
 }
