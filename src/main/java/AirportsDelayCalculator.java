@@ -16,6 +16,7 @@ public class AirportsDelayCalculator {
         Float second = Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]);
         return new Tuple2<>(first, second);
     }
+
     public static void main(String[] args) throws Exception{
         SparkConf conf = new SparkConf().setAppName("lab3");
         JavaSparkContext sc = new JavaSparkContext(conf);
