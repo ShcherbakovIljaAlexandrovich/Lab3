@@ -25,7 +25,7 @@ public class AirportsDelayCalculator {
         JavaPairRDD<Tuple2<String, String>, Float> delays = distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
 
         JavaPairRDD<String, AvgDelay> AvgDelays =
-                nums.combineByKey(
+                delays.combineByKey(
                 p -> new AvgDelay(p.getValue(), 1),
                 (AvgDelay, p) -> AvgDelay.addValue(
                 AvgDelay,
