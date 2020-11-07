@@ -21,9 +21,9 @@ public class AirportsDelayCalculator {
         SparkConf conf = new SparkConf().setAppName("lab3");
         JavaSparkContext sc = new JavaSparkContext(conf);
 
-        JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
+        JavaRDD<String> flightInfo = sc.textFile("664600583_T_ONTIME_sample.csv");
         JavaPairRDD<Tuple2<String, String>, Float> delays =
-                distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
+                flightInfo.mapToPair(AirportsDelayCalculator::stringToDelayPair);
 
         JavaPairRDD<Tuple2<String, String>, AvgDelay> avgDelays =
                 delays.combineByKey(
@@ -32,6 +32,13 @@ public class AirportsDelayCalculator {
                 AvgDelay,
                 p),
                 AvgDelay::add);
+
+        JavaRDD<String> airportsInfo = sc.textFile("L_AIRPORT_ID.csv");
+        JavaPairRDD<String, String> airportsLookup =
+                airportsInfo.mapToPair(s -> {
+                    String[] seq = s.split(DELIMITER);
+                    return new Tuple2<>(seq[0], seq[1]);
+                });
 
         
     }
