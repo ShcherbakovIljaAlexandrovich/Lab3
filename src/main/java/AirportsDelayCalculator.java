@@ -23,6 +23,6 @@ public class AirportsDelayCalculator {
 
         JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
         JavaPairRDD<Tuple2<String, String>, Float> delays = distFile.mapToPair(AirportsDelayCalculator::stringToDelayPair);
-        
+
     }
 }
