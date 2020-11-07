@@ -13,7 +13,7 @@ public class AirportsDelayCalculator {
     private static Tuple2<Tuple2<String, String>, Float> stringToDelayPair(String s) {
         String[] seq = s.split(DELIMITER);
         Tuple2<String, String> first = new Tuple2<>(seq[ORIGIN_AIRPORT_ID_COLUMN], seq[DEST_AIRPORT_ID_COLUMN]);
-        Float second = Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]);
+        float second = Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]);
         return new Tuple2<>(first, second);
     }
 

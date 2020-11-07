@@ -1,5 +1,12 @@
 public class AvgDelay {
-    private Float total;
+    private float total;
     private int count;
-    
+
+    public float getTotal() {
+        return total;
+    }
+
+    public int getCount() {
+        return count;
+    }
 }
