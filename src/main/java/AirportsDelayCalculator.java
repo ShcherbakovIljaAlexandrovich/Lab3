@@ -1,6 +1,7 @@
 import org.apache.spark.*;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import scala.Tuple2;
 
 import java.util.Arrays;
 
@@ -10,7 +11,7 @@ public class AirportsDelayCalculator {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
-        JavaRDD<tuple2, > delays = distFile.flatMap(
+        JavaRDD<Tuple2<String, String>, > delays = distFile.flatMap(
                 s -> Arrays.stream(s.split(",")).iterator()
         );
     }
