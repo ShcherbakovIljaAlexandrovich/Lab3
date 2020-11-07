@@ -10,8 +10,8 @@ public class AirportsDelayCalculator {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> distFile = sc.textFile("664600583_T_ONTIME_sample.csv");
-        JavaRDD<String> delays = distFile.flatMap(
-                
+        JavaRDD<tuple2, > delays = distFile.flatMap(
+                s -> Arrays.stream(s.split(",")).iterator()
         );
     }
 }
