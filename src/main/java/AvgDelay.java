@@ -11,6 +11,7 @@ public class AvgDelay {
     }
 
     public AvgDelay(float total, int count) {
-        
+        this.count = count;
+        this.total = total;
     }
 }
