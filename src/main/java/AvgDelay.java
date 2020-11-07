@@ -17,5 +17,20 @@ public class AvgDelay implements Serializable {
         this.total = total;
     }
 
-    
+    public static AvgDelay addValue
+            (AvgDelay a, long value) {
+        return new AvgDelay(
+                a.getTotal() + value,
+                a.getCount() + 1);
+    }
+    public static AvgDelay add
+            ( AvgDelay a, AvgDelay b) {
+        return new AvgDelay(
+                a.getTotal() + b.getTotal(),
+                a.getCount() +b.getCount()
+        );
+    }
+    public float avg() {
+        return total / count;
+    }
 }
