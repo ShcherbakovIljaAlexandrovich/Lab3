@@ -6,6 +6,9 @@ import scala.Tuple2;
 import java.util.Arrays;
 
 public class AirportsDelayCalculator {
+    public static final int ORIGIN_AIRPORT_ID_COLUMN = 11;
+    public static final int DEST_AIRPORT_ID_COLUMN = 11;
+    public static final int ORIGIN_AIRPORT_ID_COLUMN = 11;
     public static void main(String[] args) throws Exception{
         SparkConf conf = new SparkConf().setAppName("lab3");
         JavaSparkContext sc = new JavaSparkContext(conf);
