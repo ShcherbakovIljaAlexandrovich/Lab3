@@ -25,7 +25,7 @@ public class AirportsDelayCalculator {
         String[] seq = s.split(DELIMITER);
         Tuple2<String, String> first = new Tuple2<>(seq[ORIGIN_AIRPORT_ID_COLUMN], seq[DEST_AIRPORT_ID_COLUMN]);
         Tuple2<Float, Float> second = new Tuple2<>(Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]),
-                                    Float.parseFloat(seq[CANCELLED_COLUMN]));
+                                                   Float.parseFloat(seq[CANCELLED_COLUMN]));
         return new Tuple2<>(first, second);
     }
 
@@ -39,13 +39,11 @@ public class AirportsDelayCalculator {
 
         float maxDelay = delayedCancelled.max((o1, o2) -> Float.compare(o1._2._1, o2._2._1))._2._1;
 
-        JavaPairRDD<Tuple2<String, String>, AvgDelay> avgDelays =
+        JavaPairRDD<Tuple2<String, String>, DelayedCancelledPercentage> delayedCancelledPercentage =
                 delayedCancelled.combineByKey(
-                p -> new AvgDelay(p, 1),
-                (AvgDelay, p) -> AvgDelay.addValue(
-                AvgDelay,
-                p),
-                AvgDelay::add);
+                p -> new DelayedCancelledPercentage(p, 1),
+                        DelayedCancelledPercentage::addValue,
+                        DelayedCancelledPercentage::add);
 
         JavaRDD<String> airportsInfo = sc.textFile("L_AIRPORT_ID.csv");
         JavaPairRDD<String, String> airportsLookup =
@@ -53,7 +51,5 @@ public class AirportsDelayCalculator {
                     String[] seq = s.split(DELIMITER);
                     return new Tuple2<>(seq[0], seq[1]);
                 });
-
-        
     }
 }

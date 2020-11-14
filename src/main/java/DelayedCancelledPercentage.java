@@ -1,11 +1,12 @@
+import scala.Tuple2;
+
 import java.io.Serializable;
 
 public class DelayedCancelledPercentage implements Serializable {
-    private float total;
+    private int total;
     private int count;
-    private float maxDelay;
 
-    public float getTotal() {
+    public int getTotal() {
         return total;
     }
 
@@ -13,26 +14,35 @@ public class DelayedCancelledPercentage implements Serializable {
         return count;
     }
 
-    public float getMaxDelay() {return maxDelay; }
-
-    public DelayedCancelledCalculator(float total, int count, float maxDelay) {
+    public DelayedCancelledPercentage(int total, int count) {
         this.count = count;
-        this.total = total;
-        this.maxDelay = maxDelay;
+        boolean delayedOrCancelled = total._1>0 || total._2>0;
+        if (delayedOrCancelled) {
+            this.total = 1;
+        }
+        else {
+            this.total = 0;
+        }
     }
 
-    public static DelayedCancelledCalculator addValue
-            (DelayedCancelledCalculator a, float value) {
-        return new DelayedCancelledCalculator(a.getTotal() + value,a.getCount() + 1);
+    public static DelayedCancelledPercentage addValue
+            (DelayedCancelledPercentage a, Tuple2<Float, Float> value) {
+        boolean delayedOrCancelled = value._1>0 || value._2>0;
+        if (delayedOrCancelled) {
+            return new DelayedCancelledPercentage(a.getTotal() + 1,a.getCount() + 1);
+        }
+        else {
+            return new DelayedCancelledPercentage(a.getTotal(), a.getCount() + 1);
+        }
     }
-    public static DelayedCancelledCalculator add
-            ( DelayedCancelledCalculator a, DelayedCancelledCalculator b) {
-        return new DelayedCancelledCalculator(
+    public static DelayedCancelledPercentage add
+            ( DelayedCancelledPercentage a, DelayedCancelledPercentage b) {
+        return new DelayedCancelledPercentage(
                 a.getTotal() + b.getTotal(),
                 a.getCount() +b.getCount()
         );
     }
     public float avg() {
-        return total / count;
+        return total / (float)count;
     }
 }
