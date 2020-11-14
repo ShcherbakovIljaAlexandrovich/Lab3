@@ -53,7 +53,7 @@ public class AirportsDelayCalculator {
         JavaRDD<String> airportsInfo = sc.textFile("L_AIRPORT_ID.csv");
         JavaPairRDD<String, String> airportsLookup =
                 airportsInfo.mapToPair(line -> {
-                    System.out.println(line);
+                    System.out.println("------------------------------------------------------------"+line);
                     String pattern = "\"(.*)\",\"(.*)\"";
                     Pattern r = Pattern.compile(pattern);
                     Matcher m = r.matcher(line);
