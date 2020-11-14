@@ -62,6 +62,6 @@ public class AirportsDelayCalculator {
                     element._2.avg()
                     );
         });
-        output.saveAsTextFile("output.txt");
+        output.saveAsTextFile("output");
     }
 }
