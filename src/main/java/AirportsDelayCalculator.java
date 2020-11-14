@@ -4,16 +4,27 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
+import java.util.Comparator;
+
+public class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
+    public int compare(Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> x,
+                       Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> y) {
+        return 
+    }
+}
+
 public class AirportsDelayCalculator {
     public static final int ORIGIN_AIRPORT_ID_COLUMN = 11;
     public static final int DEST_AIRPORT_ID_COLUMN = 14;
     public static final int ARR_DELAY_NEW_COLUMN = 18;
+    public static final int CANCELLED_COLUMN = 18;
     public static final String DELIMITER = ",";
 
-    private static Tuple2<Tuple2<String, String>, Float> stringToDelayPair(String s) {
+    private static Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> stringToDelayCancelPair(String s) {
         String[] seq = s.split(DELIMITER);
         Tuple2<String, String> first = new Tuple2<>(seq[ORIGIN_AIRPORT_ID_COLUMN], seq[DEST_AIRPORT_ID_COLUMN]);
-        float second = Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]);
+        Tuple2<Float, Float> second = new Tuple2<>(Float.parseFloat(seq[ARR_DELAY_NEW_COLUMN]),
+                                    Float.parseFloat(seq[CANCELLED_COLUMN]));
         return new Tuple2<>(first, second);
     }
 
@@ -22,11 +33,11 @@ public class AirportsDelayCalculator {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> flightInfo = sc.textFile("664600583_T_ONTIME_sample.csv");
-        JavaPairRDD<Tuple2<String, String>, Float> delays =
-                flightInfo.mapToPair(AirportsDelayCalculator::stringToDelayPair);
+        JavaPairRDD<Tuple2<String, String>, Tuple2<Float, Float>> delayedCancelled =
+                flightInfo.mapToPair(AirportsDelayCalculator::stringToDelayCancelPair);
 
         JavaPairRDD<Tuple2<String, String>, AvgDelay> avgDelays =
-                delays.combineByKey(
+                delayedCancelled.combineByKey(
                 p -> new AvgDelay(p, 1),
                 (AvgDelay, p) -> AvgDelay.addValue(
                 AvgDelay,
