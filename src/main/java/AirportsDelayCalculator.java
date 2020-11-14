@@ -4,12 +4,13 @@ import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import scala.Tuple2;
 
+import java.math.BigDecimal;
 import java.util.Comparator;
 
-public class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
+class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
     public int compare(Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> x,
                        Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> y) {
-        return (int)(x._2._1-y._2._1);
+        return Float.compare(x._2._1, y._2._1);
     }
 }
 
@@ -27,6 +28,8 @@ public class AirportsDelayCalculator {
                                     Float.parseFloat(seq[CANCELLED_COLUMN]));
         return new Tuple2<>(first, second);
     }
+
+    
 
     public static void main(String[] args) throws Exception{
         SparkConf conf = new SparkConf().setAppName("lab3");
