@@ -2,18 +2,10 @@ import org.apache.spark.*;
 import org.apache.spark.api.java.JavaPairRDD;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.broadcast.Broadcast;
 import scala.Tuple2;
 
-import java.math.BigDecimal;
-import java.util.Comparator;
 import java.util.Map;
-
-class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
-    @Override
-    public int compare(Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> o1, Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> o2) {
-        return Float.compare(o1._2._1, o2._2._1);
-    }
-}
 
 public class AirportsDelayCalculator {
     public static final int ORIGIN_AIRPORT_ID_COLUMN = 11;
@@ -35,24 +27,22 @@ public class AirportsDelayCalculator {
         JavaSparkContext sc = new JavaSparkContext(conf);
 
         JavaRDD<String> flightInfo = sc.textFile("664600583_T_ONTIME_sample.csv");
-        JavaPairRDD<Tuple2<String, String>, Tuple2<Float, Float>> delayedCancelled =
+        JavaPairRDD<Tuple2<String, String>, Tuple2<Float, Float>> delayedCancelledInfo =
                 flightInfo.mapToPair(AirportsDelayCalculator::stringToDelayCancelPair);
 
-        float maxDelay = delayedCancelled.max((o1, o2) -> Float.compare(o1._2._1, o2._2._1))._2._1;
-
-        JavaPairRDD<Tuple2<String, String>, DelayedCancelledPercentage> delayedCancelledPercentage =
-                delayedCancelled.combineByKey(
+        JavaPairRDD<Tuple2<String, String>, DelayedCancelled> delayedCancelled =
+                delayedCancelledInfo.combineByKey(
                         p -> {
                             boolean delayedOrCancelled = p._1>0 || p._2>0;
                             if (delayedOrCancelled) {
-                                return new DelayedCancelledPercentage(1,1);
+                                return new DelayedCancelled(1,1, p._1);
                             }
                             else {
-                                return new DelayedCancelledPercentage(0,1);
+                                return new DelayedCancelled(0,1, p._1);
                             }
                         },
-                        DelayedCancelledPercentage::addValue,
-                        DelayedCancelledPercentage::add);
+                        DelayedCancelled::addValue,
+                        DelayedCancelled::add);
 
         JavaRDD<String> airportsInfo = sc.textFile("L_AIRPORT_ID.csv");
         JavaPairRDD<String, String> airportsLookup =
@@ -60,6 +50,16 @@ public class AirportsDelayCalculator {
                     String[] seq = s.split(DELIMITER);
                     return new Tuple2<>(seq[0], seq[1]);
                 });
-        Map<String, String> 
+        Map<String, String> stringAirportDataMap = airportsLookup.collectAsMap();
+        final Broadcast<Map<String, String>> airportsBroadcasted = sc.broadcast(stringAirportDataMap);
+        JavaRDD<String> output = delayedCancelled.map(element -> {
+            return String.format("%s to %s: max delay %f, delayed/cancelled percentage %f",
+                    airportsBroadcasted.value().get(element._1._1),
+                    airportsBroadcasted.value().get(element._1._2),
+                    element._2.getMaxDelay(),
+                    element._2.avg()
+                    );
+        });
+        output.saveAsTextFile("output.txt");
     }
 }
