@@ -56,7 +56,9 @@ public class AirportsDelayCalculator {
                     String pattern = "\"(.*)\",\"(.*)\"";
                     Pattern r = Pattern.compile(pattern);
                     Matcher m = r.matcher(line);
-                    return new Tuple2<>(m.group(AIRPORT_ID_COLUMN), m.group(AIRPORT_NAME_COLUMN));
+                    if (m.find()) {
+                        return new Tuple2<>(m.group(AIRPORT_ID_COLUMN), m.group(AIRPORT_NAME_COLUMN));
+                    }
                 });
         Map<String, String> stringAirportDataMap = airportsLookup.collectAsMap();
         final Broadcast<Map<String, String>> airportsBroadcasted = sc.broadcast(stringAirportDataMap);
