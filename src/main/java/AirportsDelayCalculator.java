@@ -6,6 +6,7 @@ import scala.Tuple2;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.Map;
 
 class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
     @Override
@@ -59,5 +60,6 @@ public class AirportsDelayCalculator {
                     String[] seq = s.split(DELIMITER);
                     return new Tuple2<>(seq[0], seq[1]);
                 });
+        Map<String, String> 
     }
 }
