@@ -1,6 +1,6 @@
 import java.io.Serializable;
 
-public class DelayedCancelledCalculator implements Serializable {
+public class DelayedCancelledPercentage implements Serializable {
     private float total;
     private int count;
     private float maxDelay;

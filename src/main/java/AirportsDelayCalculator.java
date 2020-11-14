@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import java.util.Comparator;
 
 class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
-    public int compare(Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> x,
-                       Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> y) {
-        return Float.compare(x._2._1, y._2._1);
+    @Override
+    public int compare(Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> o1, Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> o2) {
+        return Float.compare(o1._2._1, o2._2._1);
     }
 }
 
@@ -29,8 +29,6 @@ public class AirportsDelayCalculator {
         return new Tuple2<>(first, second);
     }
 
-    
-
     public static void main(String[] args) throws Exception{
         SparkConf conf = new SparkConf().setAppName("lab3");
         JavaSparkContext sc = new JavaSparkContext(conf);
@@ -38,6 +36,8 @@ public class AirportsDelayCalculator {
         JavaRDD<String> flightInfo = sc.textFile("664600583_T_ONTIME_sample.csv");
         JavaPairRDD<Tuple2<String, String>, Tuple2<Float, Float>> delayedCancelled =
                 flightInfo.mapToPair(AirportsDelayCalculator::stringToDelayCancelPair);
+
+        float maxDelay = delayedCancelled.max((o1, o2) -> Float.compare(o1._2._1, o2._2._1))._2._1;
 
         JavaPairRDD<Tuple2<String, String>, AvgDelay> avgDelays =
                 delayedCancelled.combineByKey(
