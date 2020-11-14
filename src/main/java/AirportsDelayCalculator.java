@@ -6,6 +6,8 @@ import org.apache.spark.broadcast.Broadcast;
 import scala.Tuple2;
 
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AirportsDelayCalculator {
     public static final int ORIGIN_AIRPORT_ID_COLUMN = 11;
@@ -13,13 +15,12 @@ public class AirportsDelayCalculator {
     public static final int ARR_DELAY_NEW_COLUMN = 18;
     public static final int CANCELLED_COLUMN = 19;
     public static final String DELIMITER = ",";
+    public static final int AIRPORT_ID_COLUMN = 1;
+    public static final int AIRPORT_NAME_COLUMN = 2;
 
     private static Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> stringToDelayCancelPair(String s) {
         String[] seq = s.split(DELIMITER);
-        Tuple2<String, String> first = new Tuple2<>(
-                String.format("\"%s\"",seq[ORIGIN_AIRPORT_ID_COLUMN]),
-                String.format("\"%s\"",seq[DEST_AIRPORT_ID_COLUMN])
-        );
+        Tuple2<String, String> first = new Tuple2<>(seq[ORIGIN_AIRPORT_ID_COLUMN], seq[DEST_AIRPORT_ID_COLUMN]);
         String delay = seq[ARR_DELAY_NEW_COLUMN];
         if (delay.equals("")) {delay = "0.00";}
         String cancelled = seq[CANCELLED_COLUMN];
@@ -51,9 +52,11 @@ public class AirportsDelayCalculator {
 
         JavaRDD<String> airportsInfo = sc.textFile("L_AIRPORT_ID.csv");
         JavaPairRDD<String, String> airportsLookup =
-                airportsInfo.mapToPair(s -> {
-                    String[] seq = s.split(DELIMITER);
-                    return new Tuple2<>(seq[0], seq[1]);
+                airportsInfo.mapToPair(line -> {
+                    String pattern = "\"(.*)\",\"(.*)\"";
+                    Pattern r = Pattern.compile(pattern);
+                    Matcher m = r.matcher(line);
+                    return new Tuple2<>(m.group(AIRPORT_ID_COLUMN), m.group(AIRPORT_NAME_COLUMN));
                 });
         Map<String, String> stringAirportDataMap = airportsLookup.collectAsMap();
         final Broadcast<Map<String, String>> airportsBroadcasted = sc.broadcast(stringAirportDataMap);
