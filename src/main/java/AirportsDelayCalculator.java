@@ -9,7 +9,7 @@ import java.util.Comparator;
 public class DelayComparator implements Comparator<Tuple2<Tuple2<String, String>, Tuple2<Float, Float>>> {
     public int compare(Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> x,
                        Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> y) {
-        return 
+        return (int)(x._2._1-y._2._1);
     }
 }
 
