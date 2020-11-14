@@ -16,13 +16,7 @@ public class DelayedCancelledPercentage implements Serializable {
 
     public DelayedCancelledPercentage(int total, int count) {
         this.count = count;
-        boolean delayedOrCancelled = total._1>0 || total._2>0;
-        if (delayedOrCancelled) {
-            this.total = 1;
-        }
-        else {
-            this.total = 0;
-        }
+        this.total = total;
     }
 
     public static DelayedCancelledPercentage addValue

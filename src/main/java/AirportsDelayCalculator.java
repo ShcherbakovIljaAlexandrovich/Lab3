@@ -41,7 +41,15 @@ public class AirportsDelayCalculator {
 
         JavaPairRDD<Tuple2<String, String>, DelayedCancelledPercentage> delayedCancelledPercentage =
                 delayedCancelled.combineByKey(
-                p -> new DelayedCancelledPercentage(p, 1),
+                p -> {
+                    boolean delayedOrCancelled = p._1>0 || p._2>0;
+                    if (delayedOrCancelled) {
+                        return new DelayedCancelledPercentage(1,1);
+                    }
+                    else {
+                        return new DelayedCancelledPercentage(0,1);
+                    }
+                },
                         DelayedCancelledPercentage::addValue,
                         DelayedCancelledPercentage::add);
 
