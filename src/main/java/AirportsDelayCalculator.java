@@ -18,7 +18,8 @@ public class AirportsDelayCalculator {
         String[] seq = s.split(DELIMITER);
         Tuple2<String, String> first = new Tuple2<>(
                 String.format("\"%s\"",seq[ORIGIN_AIRPORT_ID_COLUMN]),
-                String.format("\"%s\"",seq[DEST_AIRPORT_ID_COLUMN]);
+                String.format("\"%s\"",seq[DEST_AIRPORT_ID_COLUMN])
+        );
         String delay = seq[ARR_DELAY_NEW_COLUMN];
         if (delay.equals("")) {delay = "0.00";}
         String cancelled = seq[CANCELLED_COLUMN];
