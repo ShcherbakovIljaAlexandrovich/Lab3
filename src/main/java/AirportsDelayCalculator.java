@@ -11,7 +11,7 @@ public class AirportsDelayCalculator {
     public static final int ORIGIN_AIRPORT_ID_COLUMN = 11;
     public static final int DEST_AIRPORT_ID_COLUMN = 14;
     public static final int ARR_DELAY_NEW_COLUMN = 18;
-    public static final int CANCELLED_COLUMN = 18;
+    public static final int CANCELLED_COLUMN = 19;
     public static final String DELIMITER = ",";
 
     private static Tuple2<Tuple2<String, String>, Tuple2<Float, Float>> stringToDelayCancelPair(String s) {
